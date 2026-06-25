@@ -78,7 +78,7 @@
 **Screenshot**
 
 
-![Unprotected admin functionality](/access-control-vuln/unprotected_url)
+![Unprotected admin functionality](/access-control-vuln/unprotected_url.png)
 
 
 **Payload**
