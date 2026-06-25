@@ -1,264 +1,375 @@
 # Access Control Vulnerability Assessment Report
 
-Executive Summary
+## Executive Summary
 
-This report documents the identification and exploitation of multiple Access Control vulnerabilities discovered during structured security testing in a controlled training environment.
+-This report documents the identification and exploitation of multiple Access Control vulnerabilities discovered during structured security testing in a controlled training environment.
 
-The assessment demonstrates a range of broken authorization mechanisms including unprotected administrative functionality, insecure direct object references (IDOR), client-side trust of authorization data, and weak workflow enforcement.
+-The assessment demonstrates a range of broken authorization mechanisms including unprotected administrative functionality, insecure direct object references (IDOR), client-side trust of authorization data, and weak workflow enforcement.
 
-Collectively, these vulnerabilities enable:
+-Collectively, these vulnerabilities enable:
 
-Unauthorized administrative access
-Horizontal and vertical privilege escalation
-Sensitive data disclosure (including credentials)
-Workflow manipulation
-Cross-user data access
+- Unauthorized administrative access
+- Horizontal and vertical privilege escalation
+- Sensitive data disclosure (including credentials)
+- Workflow manipulation
+- Cross-user data access
 
-The findings highlight systemic weaknesses in server-side authorization enforcement, representing a high risk if present in production systems.
+-The findings highlight systemic weaknesses in server-side authorization enforcement, representing a high risk if present in production systems.
 
-Assessment Overview
-Attribute	Details
-Testing Type	Web Application Security Assessment
-Focus Area	Access Control
-Environment	PortSwigger Web Security Academy Labs
-Methodology	Manual Testing, Request Manipulation, Parameter Tampering
-Risk Rating Model	OWASP-style qualitative assessment
-Overall Risk	Critical
-Key Findings Summary
-ID	Vulnerability	Category	Severity
-F1	Unprotected Admin Functionality	Broken Access Control	High
-F2	Obscured Admin Endpoint	Security Through Obscurity	High
-F3	User Role Controlled by Request	Privilege Escalation	Critical
-F4	Role Modified via Profile	Privilege Escalation	Critical
-F5	User ID Parameter Tampering	IDOR	High
-F6	Unpredictable User ID Enumeration	IDOR	High
-F7	Redirect-Based Data Leakage	Information Disclosure	Medium-High
-F8	Password Disclosure via IDOR	Credential Exposure	Critical
-F9	Insecure Direct Object Reference	IDOR	High
-F10	URL-Based Access Control Bypass	Broken Access Control	High
-F11	Method-Based Access Control Bypass	Authorization Bypass	High
-F12	Multi-Step Workflow Bypass	Business Logic Flaw	High
-F13	Referer-Based Access Control	Broken Access Control	Medium-High
-Detailed Findings
-F1 – Unprotected Admin Functionality
+### Assessment Overview
 
-Severity: High
-Type: Broken Access Control
+| Attribute         | Details                                                   |
+| ----------------- | --------------------------------------------------------- |
+| Testing Type      | Web Application Security Assessment                       |
+| Focus Area        | Access Control                                            |
+| Environment       | PortSwigger Web Security Academy Labs                     |
+| Methodology       | Manual Testing, Request Manipulation, Parameter Tampering |
+| Risk Rating Model | OWASP-style qualitative assessment                        |
+| Overall Risk      | Critical                                                  |
 
-Description
+### Key Findings Summary
 
-Administrative functionality is exposed without authentication or authorization checks, allowing direct access by any user.
+| ID  | Vulnerability                      | Category                   | Severity    |
+| --- | ---------------------------------- | -------------------------- | ----------- |
+| F1  | Unprotected Admin Functionality    | Broken Access Control      | High        |
+| F2  | Obscured Admin Endpoint            | Security Through Obscurity | High        |
+| F3  | User Role Controlled by Request    | Privilege Escalation       | Critical    |
+| F4  | Role Modified via Profile          | Privilege Escalation       | Critical    |
+| F5  | User ID Parameter Tampering        | IDOR                       | High        |
+| F6  | Unpredictable User ID Enumeration  | IDOR                       | High        |
+| F7  | Redirect-Based Data Leakage        | Information Disclosure     | Medium-High |
+| F8  | Password Disclosure via IDOR       | Credential Exposure        | Critical    |
+| F9  | Insecure Direct Object Reference   | IDOR                       | High        |
+| F10 | URL-Based Access Control Bypass    | Broken Access Control      | High        |
+| F11 | Method-Based Access Control Bypass | Authorization Bypass       | High        |
+| F12 | Multi-Step Workflow Bypass         | Business Logic Flaw        | High        |
+| F13 | Referer-Based Access Control       | Broken Access Control      | Medium-High |
 
-Impact
-Full administrative control
-Unauthorized data modification
-User account manipulation
-Potential system compromise
-Proof of Concept
-Navigate to application endpoints
-Identify /admin interface
-Access endpoint directly without authentication
-Execute administrative actions successfully
-Security Issue
+## Detailed Findings
 
-Server fails to enforce role-based authorization checks on privileged endpoints.
+### F1- Unprotected Admin Functionality
 
-F2 – Admin Functionality Hidden by Obscure URL
+**Severity:** High
 
-Severity: High
-Type: Security Through Obscurity
+**Type:** Broken Access Control
 
-Description
+#### Description
 
-Administrative interface is hidden but not protected by authorization logic.
+-Administrative functionality is exposed without authentication or authorization checks, allowing direct access by any user.
 
-Impact
-Unauthorized admin access if URL is discovered
-Exposure of sensitive management functions
-Issue
+#### Impact
 
-Obscurity is incorrectly used as a security control.
+- Full administrative control
+- Unauthorized data modification
+- User account manipulation
+- Potential system compromise
 
-F3 – User Role Controlled by Request Parameter
+#### Proof of Concept
 
-Severity: Critical
-Type: Privilege Escalation
+1. Navigate to application endpoints
+2. Identify /admin interface
+3. Access endpoint directly without authentication
+4. Execute administrative actions successfully
 
-Description
+#### Security Issue
 
-User role is controlled via client-supplied parameter, allowing arbitrary privilege escalation.
+-Server fails to enforce role-based authorization checks on privileged endpoints.
 
-Proof of Concept
+**Screenshot**
+
+[first image](asadd)
+
+**Payload**
+
+### F1-Admin Functionality Hidden by Obscure URL
+
+**Severity:** High
+
+**Type:** Security Through Obscurity
+
+#### Description
+
+-Administrative interface is hidden but not protected by authorization logic.
+
+#### Impact
+
+- Unauthorized admin access if URL is discovered
+- Exposure of sensitive management functions
+
+#### Issue
+
+-Obscurity is incorrectly used as a security control.
+
+### F3 – User Role Controlled by Request Parameter
+
+**Severity:** Critical
+**Type:** Privilege Escalation
+
+#### Description
+-User role is controlled via client-supplied parameter, allowing arbitrary privilege escalation.
+
+#### Proof of Concept
 
 Request:
 
+```
 POST /update-role
 role=user
 
+```
+
 Modified:
 
+```
+
 role=administrator
-Impact
-Full privilege escalation
-Account takeover
-Administrative access
-F4 – User Role Modified in Profile
 
-Severity: Critical
-Type: Broken Access Control
+```
 
-Description
+#### Impact
 
-Role attribute is editable through user profile update functionality.
+- Full privilege escalation
+- Account takeover
+- Administrative access
 
-Impact
-Unauthorized elevation to admin role
-Integrity violation of user account data
-F5 – User ID Controlled by Request Parameter
+### F4 – Role Modified in Profile
 
-Severity: High
-Type: IDOR
+**Severity:** Critical
+**Type:** Broken Access Control
 
-Description
+#### Description
 
-User data is retrieved based on user-controlled identifiers.
+-Role attribute is editable through user profile update functionality.
 
-Impact
-Cross-account data access
-Unauthorized profile viewing
-F6 – Unpredictable User IDs with Enumeration
+#### Impact
 
-Severity: High
-Type: IDOR
+- Unauthorized elevation to admin role
+- Integrity violation of user account data
 
-Description
+### F5 – User ID Controlled by Request Parameter
 
-Even randomized user IDs can be discovered through application behavior patterns.
+**Severity:** High
 
-Impact
-User enumeration
-Unauthorized data access
-F7 – Data Leakage via Redirect
+**Type:** IDOR
 
-Severity: Medium-High
-Type: Information Disclosure
+#### Description
 
-Description
+-User data is retrieved based on user-controlled identifiers.
 
-Sensitive user identifiers are exposed in redirect responses.
+#### Impact
 
-Impact
-Account enumeration
-Indirect unauthorized access
-F8 – Password Disclosure via IDOR
+- Cross-account data access
+- Unauthorized profile viewing
 
-Severity: Critical
-Type: Credential Exposure
+### F6 – Unpredictable User ID Enumeration
 
-Description
+**Severity:** High
+
+**Type:** IDOR
+
+#### Description
+
+-Even randomized user IDs can be discovered through application behavior patterns.
+
+#### Impact
+
+- User enumeration
+- Unauthorized data access
+
+### F7 – Data Leakage via Redirect
+
+**Severity:** Medium-High
+
+**Type:** Information Disclosure
+
+#### Description
+
+-Sensitive user identifiers are exposed in redirect responses.
+
+#### Impact
+
+- Account enumeration
+- Indirect unauthorized access
+
+### F8 – Password Disclosure via IDOR
+
+**Severity:** Critical
+
+**Type:** Credential Exposure
+
+#### Description
 
 Application exposes password-related data due to missing authorization checks.
 
-Impact
-Credential compromise
-Full account takeover
-F9 – Insecure Direct Object Reference
+#### Impact
 
-Severity: High
-Type: IDOR
+- Credential compromise
+- Full account takeover
 
-Description
+### F9 – Insecure Direct Object Reference
 
-Direct object references are accessible without ownership validation.
+**Severity:** High
 
-Impact
-Unauthorized access to sensitive resources
-F10 – URL-Based Access Control Bypass
+**Type:** IDOR
 
-Severity: High
-Type: Broken Access Control
+#### Description
 
-Description
+-Direct object references are accessible without ownership validation.
 
-Authorization is enforced based on URL patterns only and can be bypassed.
+#### Impact
 
-Impact
-Access restriction bypass
-Privilege escalation
-F11 – Method-Based Access Control Bypass
+- Unauthorized access to sensitive resources
 
-Severity: High
-Type: Authorization Bypass
+### F10 – URL-Based Access Control Bypass
 
-Description
+**Severity:** High
 
-Access control differs across HTTP methods, allowing bypass via method tampering.
+**Type:** Broken Access Control
 
-Impact
-Unauthorized execution of restricted actions
-F12 – Multi-Step Process Missing Authorization
+#### Description
 
-Severity: High
-Type: Business Logic Vulnerability
+-Authorization is enforced based on URL patterns only and can be bypassed.
 
-Description
+#### Impact
 
-One step in a multi-stage workflow lacks authorization validation.
+- Access restriction bypass
+- Privilege escalation
 
-Impact
-Workflow manipulation
-Unauthorized transaction execution
-F13 – Referer-Based Access Control
+### F11 – Method-Based Access Control Bypass
 
-Severity: Medium-High
-Type: Broken Access Control
+**Severity:** High
 
-Description
+**Type:** Authorization Bypass
 
-Authorization depends on HTTP Referer header, which can be manipulated.
+#### Description
 
-Impact
-Access control bypass
-Unauthorized actions
-Remediation Recommendations
-1. Enforce Server-Side Authorization
+-Access control differs across HTTP methods, allowing bypass via method tampering.
 
-All requests must validate permissions independently on the server.
+#### Impact
 
-2. Implement Role-Based Access Control (RBAC)
+- Unauthorized execution of restricted actions
 
-Strict role separation between users, admins, and privileged operations.
+### F12 – Multi-Step Process Missing Authorization
 
-3. Eliminate Client-Side Trust
+**Severity:** High
 
-Never trust:
+**Type:** Business Logic Vulnerability
 
-Role parameters
-User IDs
-Permission flags from client input
-4. Secure Object Access
+#### Description
 
-Ensure users can only access objects they own or are authorized for.
+-One step in a multi-stage workflow lacks authorization validation.
 
-5. Protect All Workflow Steps
+#### Impact
 
-Each stage in multi-step processes must enforce authorization.
+- Workflow manipulation
+- Unauthorized transaction execution  
 
-6. Avoid Weak Controls
+### F13 – Referer-Based Access Control
 
-Do not rely on:
+**Severity:** Medium-High
 
-URL hiding
-Referer headers
-HTTP methods
-7. Centralize Authorization Logic
+**Type:** Broken Access Control
 
-Use consistent middleware or policy layers for enforcement.
+#### Description
 
-Conclusion
+-Authorization depends on HTTP Referer header, which can be manipulated.
 
-This assessment demonstrates widespread and systemic access control weaknesses, primarily caused by insufficient server-side authorization enforcement and excessive reliance on client-controlled data.
+#### Impact
 
-If present in a real-world application, these vulnerabilities would allow attackers to escalate privileges, access sensitive data, and compromise system integrity.
+- Access control bypass
+- Unauthorized actions
 
-Strengthening authorization controls and enforcing least-privilege principles are critical to mitigating these risks.
+### Remediation Recommendations
+
+#### 1. Enforce Server-Side Authorization
+
+-All requests must validate permissions independently on the server.
+
+#### 2. Implement Role-Based Access Control (RBAC)
+
+-Strict separation between users, admins, and privileged operations.
+
+#### 3. Eliminate Client-Side Trust
+
+-Never trust:
+
+- Role parameters
+- User IDs
+- Permission flags from client input
+  
+#### 4. Secure Object Access
+
+-Ensure users can only access objects they own or are authorized for.
+
+#### 5. Protect All Workflow Steps
+
+-Each stage in multi-step processes must enforce authorization.
+
+#### 6. Avoid Weak Controls
+
+-Do not rely on:
+
+- URL hiding
+- Referer headers
+- HTTP methods
+#### 7. Centralize Authorization Logic
+
+-Use consistent middleware or policy layers for enforcement.
+
+### Conclusion
+
+-This assessment demonstrates widespread and systemic access control weaknesses, primarily caused by insufficient server-side authorization enforcement and excessive reliance on client-controlled data.
+
+-If present in a real-world application, these vulnerabilities would allow attackers to escalate privileges, access sensitive data, and compromise system integrity.
+
+-Strengthening authorization controls and enforcing least-privilege principles are critical to mitigating these risks.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
