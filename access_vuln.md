@@ -77,7 +77,9 @@
 
 **Screenshot**
 
-[first image](asadd)
+
+![Unprotected admin functionality](/access-control-vuln/unprotected_url)
+
 
 **Payload**
 
