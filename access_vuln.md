@@ -78,10 +78,15 @@
 **Screenshot**
 
 
-![Unprotected admin functionality](/access-control-vuln/unprotected_url.png)
+![Unprotected admin functionality](./unprotected_admin.png)
 
 
 **Payload**
+
+```
+adding /administrator-panel
+
+```
 
 ### F1-Admin Functionality Hidden by Obscure URL
 
