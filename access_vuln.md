@@ -89,7 +89,7 @@ adding /administrator-panel
 
 ```
 
-### F1-Admin Functionality Hidden by Obscure URL
+### F2-Admin Functionality Hidden by Obscure URL
 
 **Severity:** High
 
@@ -108,9 +108,28 @@ adding /administrator-panel
 
 -Obscurity is incorrectly used as a security control.
 
+**Screenshot**
+
+![Unpredictable URL](./unpredictable_url.png)
+
+**Payload**
+
+```
+1.Click inspect and check the script tags
+2.Then you can see something like this:
+
+var isAdmin = false;
+if (isAdmin) {
+   var topLinksTag = document.getElementsByClassName("top-links")[0];
+   var adminPanelTag = document.createElement('a');
+   adminPanelTag.setAttribute **('href', '/admin-2os362')**;
+
+```
+
 ### F3 – User Role Controlled by Request Parameter
 
 **Severity:** Critical
+
 **Type:** Privilege Escalation
 
 #### Description
@@ -139,6 +158,10 @@ role=administrator
 - Full privilege escalation
 - Account takeover
 - Administrative access
+
+  **Screenshot**
+
+  [Request Parameter]()
 
 ### F4 – Role Modified in Profile
 
