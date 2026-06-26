@@ -197,6 +197,20 @@ role=administrator
 - Unauthorized elevation to admin role
 - Integrity violation of user account data
 
+  **Screenshot**
+
+![User Profile](./user_profile.png)
+
+**payload**
+
+```
+1.The admin had a role id of 2 and the normal user had a role of 1
+2.So I captured the traffic when updating my email and sent it to the repeater.
+3.On the request header I made my role ID to be 2 as same as admin giving me admin privileges
+
+```
+
+
 ### F5 – User ID Controlled by Request Parameter
 
 **Severity:** High
